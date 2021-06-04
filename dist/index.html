@@ -1,14 +1,34 @@
 <html>
+    <head>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    </head>
     <body>
         <section>
-            Response:
+            <div>
+                Market Cap: 
+                <span id="market-cap"/>
+            </div>
             
+            <div>
+                Percentage Change: 
+                <span id="percentage"/>
+            </div>
+
+            <h2>Response:</h2>
+            <p id="response" style="white-space: pre;"></p>
         </section>
         <script>
             async function main() {
                 const result = await fetch("https://hesed-crypto-market-cap-server.netlify.app/.netlify/functions/market-cap")
-                const json = result.json()
+                const json = await result.json()
+                document.querySelector("#response").innerText = JSON.stringify(json, null, 4)
+                
                 console.log({ json })
+
+                const { total_market_cap, total_market_cap_yesterday_percentage_change } = json.data.quote.USD
+                
+                document.querySelector("#market-cap").innerText = "$" + numeral(Number(total_market_cap)).format('0.00a').toUpperCase()
+                document.querySelector("#percentage").innerText = numeral(Number(total_market_cap_yesterday_percentage_change)).format("0.00") + "%"
             }
 
             main()
