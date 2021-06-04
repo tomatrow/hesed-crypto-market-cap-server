@@ -23,7 +23,7 @@ const coinMarketCapApi = createCoinMarketCapApi(false)
 function shouldUpdate(timestamp) {
     if (!timestamp) return true
     const date = parseISO(timestamp)
-    return differenceInMinutes(date, new Date()) > 15
+    return differenceInMinutes(new Date(), date) > 15
 }
 
 exports.fetchMarketCap = async function () {
