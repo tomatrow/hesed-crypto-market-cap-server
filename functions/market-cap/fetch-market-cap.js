@@ -1,8 +1,8 @@
 const faunadb = require("faunadb")
 const axios = require("axios")
-const parseISO = require('date-fns/parseISO')
-const differenceInMinutes = require('date-fns/differenceInMinutes')
-const formatISO = require('date-fns/formatISO')
+const parseISO = require("date-fns/parseISO")
+const differenceInMinutes = require("date-fns/differenceInMinutes")
+const formatISO = require("date-fns/formatISO")
 
 const q = faunadb.query
 
@@ -21,9 +21,9 @@ function createCoinMarketCapApi(debug = false) {
 const coinMarketCapApi = createCoinMarketCapApi(false)
 
 function shouldUpdate(timestamp) {
-    if (!timestamp) return true 
+    if (!timestamp) return true
     const date = parseISO(timestamp)
-    return differenceInMinutes(date, new Date()) > 15 
+    return differenceInMinutes(date, new Date()) > 15
 }
 
 exports.fetchMarketCap = async function () {
@@ -33,7 +33,7 @@ exports.fetchMarketCap = async function () {
 
     const ref = q.Ref(q.Collection("default"), "0")
     const { data } = await client.query(q.Get(ref))
-    
+
     if (shouldUpdate(data.lastRequestTimestamp)) {
         console.log("Fetching new data...")
         const response = await coinMarketCapApi.get(`/global-metrics/quotes/latest`)
