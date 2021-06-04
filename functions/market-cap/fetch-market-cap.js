@@ -46,7 +46,7 @@ exports.fetchMarketCap = async function () {
             })
         )
     } else {
-        console.log("Using cached response...")
+        console.log("Using cached response...", data.lastRequestTimestamp, formatISO(new Date()))
     }
 
     return data.cachedResponseData
