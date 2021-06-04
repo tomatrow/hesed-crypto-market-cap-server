@@ -18,20 +18,16 @@
             <p id="response" style="white-space: pre;"></p>
         </section>
         <script>
-            async function main() {
+            ;(async function () {
                 const result = await fetch("https://hesed-crypto-market-cap-server.netlify.app/.netlify/functions/market-cap")
                 const json = await result.json()
                 document.querySelector("#response").innerText = JSON.stringify(json, null, 4)
                 
                 console.log({ json })
 
-                const { total_market_cap, total_market_cap_yesterday_percentage_change } = json.data.quote.USD
-                
                 document.querySelector("#market-cap").innerText = json.marketCap
                 document.querySelector("#percentage").innerText = json.percentChange
-            }
-
-            main()
+            })()
         </script>
     </body>
 </html>
