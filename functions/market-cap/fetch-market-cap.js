@@ -3,6 +3,7 @@ const axios = require("axios")
 const parseISO = require("date-fns/parseISO")
 const differenceInMinutes = require("date-fns/differenceInMinutes")
 const formatISO = require("date-fns/formatISO")
+const numeral = require("numeral")
 
 const q = faunadb.query
 
@@ -49,5 +50,14 @@ exports.fetchMarketCap = async function () {
         console.log("Using cached response...", data.lastRequestTimestamp, formatISO(new Date()))
     }
 
-    return data.cachedResponseData
+    const { total_market_cap, total_market_cap_yesterday_percentage_change } = json.data.quote.USD
+    const result = {
+        marketCap: "$" + numeral(Number(total_market_cap)).format("0.00a").toUpperCase(),
+        percentChange:
+            numeral(Number(total_market_cap_yesterday_percentage_change)).format("0.00") + "%"
+    }
+
+    console.log({ result })
+
+    return result
 }

@@ -1,6 +1,6 @@
 <html>
     <head>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+        <title>Market Cap</title>
     </head>
     <body>
         <section>
@@ -27,8 +27,8 @@
 
                 const { total_market_cap, total_market_cap_yesterday_percentage_change } = json.data.quote.USD
                 
-                document.querySelector("#market-cap").innerText = "$" + numeral(Number(total_market_cap)).format('0.00a').toUpperCase()
-                document.querySelector("#percentage").innerText = numeral(Number(total_market_cap_yesterday_percentage_change)).format("0.00") + "%"
+                document.querySelector("#market-cap").innerText = json.marketCap
+                document.querySelector("#percentage").innerText = json.percentChange
             }
 
             main()
