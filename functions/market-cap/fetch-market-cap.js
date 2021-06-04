@@ -50,7 +50,7 @@ exports.fetchMarketCap = async function () {
         console.log("Using cached response...", data.lastRequestTimestamp, formatISO(new Date()))
     }
 
-    const { total_market_cap, total_market_cap_yesterday_percentage_change } = json.data.quote.USD
+    const { total_market_cap, total_market_cap_yesterday_percentage_change } = data.cachedResponseData.data.quote.USD
     const result = {
         marketCap: "$" + numeral(Number(total_market_cap)).format("0.00a").toUpperCase(),
         percentChange:
