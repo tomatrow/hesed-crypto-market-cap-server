@@ -1,4 +1,4 @@
-const fetchMarketCap = require("./fetch-market-cap")
+const { fetchMarketCap } = require("./fetch-market-cap")
 
 exports.handler = async function () {
     try {
