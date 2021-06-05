@@ -54,10 +54,9 @@ exports.fetchMarketCap = async function () {
     const result = {
         marketCap: "$" + numeral(Number(total_market_cap)).format("0.00a").toUpperCase(),
         percentChange:
-            numeral(Number(total_market_cap_yesterday_percentage_change)).format("0.00") + "%"
+            numeral(Number(total_market_cap_yesterday_percentage_change)).format("0.00") + "%",
+        increase: total_market_cap_yesterday_percentage_change > 0
     }
-
-    console.log({ result })
 
     return result
 }

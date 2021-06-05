@@ -2,6 +2,8 @@ const { fetchMarketCap } = require("./fetch-market-cap")
 
 exports.handler = async function () {
     try {
+        const result = await fetchMarketCap()
+        console.log({ result })
         return {
             statusCode: 200,
             headers: {
@@ -9,7 +11,7 @@ exports.handler = async function () {
                 "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE"
             },
-            body: JSON.stringify(await fetchMarketCap())
+            body: JSON.stringify(result)
         }
     } catch (error) {
         console.error(error)
