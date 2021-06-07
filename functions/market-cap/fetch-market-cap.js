@@ -4,22 +4,23 @@ const parseISO = require("date-fns/parseISO")
 const differenceInMinutes = require("date-fns/differenceInMinutes")
 const formatISO = require("date-fns/formatISO")
 const numeral = require("numeral")
+const CoinGecko = require('coingecko-api');
 
 const q = faunadb.query
 
 function createCoinMarketCapApi(debug = false) {
-    const prefix = debug ? "MOCK_" : ""
-
     return axios.create({
-        baseURL: `https://${process.env[prefix + "COIN_API_BASE"]}/v1/`,
-        timeout: 1000,
+        baseURL: `https://${process.env.COIN_API_BASE}/v1/`,
+        timeout: 5000,
         headers: {
-            "X-CMC_PRO_API_KEY": process.env[prefix + "COIN_MARKET_CAP_KEY"]
+            "X-CMC_PRO_API_KEY": process.env.COIN_MARKET_CAP_KEY
         }
     })
 }
 
-const coinMarketCapApi = createCoinMarketCapApi(false)
+const CoinGeckoClient = new CoinGecko();
+const coinMarketCapApi = createCoinMarketCapApi()
+exports.coinMarketCapApi = coinMarketCapApi
 
 function shouldUpdate(timestamp) {
     if (!timestamp) return true
@@ -37,10 +38,14 @@ exports.fetchMarketCap = async function () {
 
     if (shouldUpdate(data.lastRequestTimestamp)) {
         console.log("Fetching new data...")
-        const response = await coinMarketCapApi.get(`/global-metrics/quotes/latest`)
-        data.cachedResponseData = response.data
+
+        const coinGeckoResponse = await CoinGeckoClient.global()
+        data.coinGeckoCached = coinGeckoResponse.data.data
+    
+        const coinMarketCapResponse = await coinMarketCapApi.get(`/global-metrics/quotes/latest`)
+        data.coinMarketCapCached = coinMarketCapResponse.data.data
         data.lastRequestTimestamp = formatISO(new Date())
-        console.log("Fetched...", { data })
+
         await client.query(
             q.Update(ref, {
                 data
@@ -50,13 +55,19 @@ exports.fetchMarketCap = async function () {
         console.log("Using cached response...", data.lastRequestTimestamp, formatISO(new Date()))
     }
 
-    const { total_market_cap, total_market_cap_yesterday_percentage_change } = data.cachedResponseData.data.quote.USD
-    const result = {
+    return {
+        coinMarketCap: data.coinMarketCapCached,
+        coinGecko: data.coinGeckoCached
+    }
+}
+
+exports.extractData = function (data) {
+    const { total_market_cap } = data.coinMarketCap.quote.USD
+    const { market_cap_change_percentage_24h_usd } = data.coinGecko
+    return {
         marketCap: "$" + numeral(Number(total_market_cap)).format("0.00a").toUpperCase(),
         percentChange:
-            numeral(Number(total_market_cap_yesterday_percentage_change)).format("0.00") + "%",
-        increase: total_market_cap_yesterday_percentage_change > 0
+            numeral(Number(market_cap_change_percentage_24h_usd)).format("0.00") + "%",
+        increase: market_cap_change_percentage_24h_usd > 0
     }
-
-    return result
 }

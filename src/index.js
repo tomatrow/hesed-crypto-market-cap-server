@@ -1,7 +1,11 @@
-const { fetchMarketCap } = require("../functions/market-cap/fetch-market-cap")
+const { fetchMarketCap, extractData } = require('../functions/market-cap/fetch-market-cap');
 
 ;(async function() {
-    const result = await fetchMarketCap()
+    console.log({ fetchMarketCap, extractData } )
+    const data = await fetchMarketCap()
+    console.log({ data })
+    
+    const result = extractData(data)
     console.log({ result })
 })()
 

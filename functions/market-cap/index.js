@@ -1,9 +1,9 @@
-const { fetchMarketCap } = require("./fetch-market-cap")
+const { fetchMarketCap, extractData } = require("./fetch-market-cap")
 
 exports.handler = async function () {
     try {
-        const result = await fetchMarketCap()
-        console.log({ result })
+        const data = await fetchMarketCap()
+        const result = extractData(data)
         return {
             statusCode: 200,
             headers: {
